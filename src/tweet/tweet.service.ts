@@ -32,21 +32,5 @@ export class TweetService {
   ];
 
   GetTweets(id: number) {
-    const user = this.userService.getUserById(id);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    const tweets = this.tweets.filter((tweet) => tweet.id === id);
-    const response = tweets.map((tweet) => {
-      return {
-        context: tweet.context,
-        data: tweet.date,
-        user: {
-          name: user.name,
-          userId: user.id,
-        },
-      };
-    });
-    return response;
   }
 }

@@ -19,43 +19,19 @@ export class UsersController {
   constructor(private usersService: UsersService) { }
 
   @Get()
-  getUsers(
-    @Query() query: { gender?: string; isMarried?: string | boolean },
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-  ) {
-    console.log('limit : ', limit, 'page : ', page);
-    if (query) {
-      const usersData = this.usersService.getAllUsers();
-      let filteredData = usersData;
-      if (query.gender) {
-        filteredData = filteredData.filter(
-          (user) => user.gender === query.gender,
-        );
-      }
-      if (query.isMarried) {
-        const isMarriedBool =
-          typeof query.isMarried === 'string'
-            ? query.isMarried.toLowerCase() === 'true'
-            : query.isMarried === true;
-        filteredData = filteredData.filter(
-          (user) => user.isMarried === isMarriedBool,
-        );
-      }
-      return filteredData;
-    }
+  getUsers() {
     return this.usersService.getAllUsers();
   }
 
   @Get(':id')
   getUserById(@Param('id', ParseIntPipe) id: any) {
     console.log(typeof id, id);
-    return this.usersService.getUserById(+id);
+    return this.usersService.getUserById();
   }
 
   @Post()
   createUser(@Body() user: CreateUserDto) {
-    return 'A new user has been created!';
+    return this.usersService.createUser(user);
   }
 
   @Patch(':id')
