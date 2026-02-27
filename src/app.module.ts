@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
 import { User } from './users/user.entity';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { User } from './users/user.entity';
       inject: [],
       useFactory: () => ({
         type: 'postgres',
-        entities: [User],
+        autoLoadEntities: true,
+        // entities: [User],
         synchronize: true,
         host: process.env.DB_HOST,
         port: parseInt(process.env.DB_PORT || '5432', 10),
@@ -33,8 +35,9 @@ import { User } from './users/user.entity';
         database: process.env.DB_NAME,
       }),
     }),
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

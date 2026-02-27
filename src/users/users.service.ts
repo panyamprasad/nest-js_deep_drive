@@ -10,18 +10,18 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   public async createUser(userData: CreateUserDto) {
     // Validate the incoming user data if a user with the same email already exists
     const user = await this.userRepository.findOne({
       where: {
         email: userData.email,
-      }
-    })
+      },
+    });
 
     //Handle the case where a user with the same email already exists
-    if(user){
+    if (user) {
       return { message: 'User with this email already exists' };
     }
 
@@ -36,6 +36,5 @@ export class UsersService {
 
   getUserById() {
     // return this.userRepository.findOneBy({ id });
-  } 
-  
+  }
 }

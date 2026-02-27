@@ -8,6 +8,5 @@ export class AuthService {
     private readonly userService: UsersService,
   ) {}
   isAuthenticated = false;
-  login(email: string, password: string) {
-  }
+  login(email: string, password: string) {}
 }

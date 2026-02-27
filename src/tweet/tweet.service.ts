@@ -31,6 +31,5 @@ export class TweetService {
     },
   ];
 
-  GetTweets(id: number) {
-  }
+  GetTweets(id: number) {}
 }
