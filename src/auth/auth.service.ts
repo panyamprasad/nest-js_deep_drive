@@ -6,7 +6,7 @@ export class AuthService {
   constructor(
     @Inject(forwardRef(() => UsersService))
     private readonly userService: UsersService,
-  ) { }
+  ) {}
   isAuthenticated = false;
-  login(email: string, password: string) { }
+  login(email: string, password: string) {}
 }

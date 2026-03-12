@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
 import { ProfileModule } from './profile/profile.module';
+import { HashTagModule } from './hash-tag/hash-tag.module';
 
 @Module({
   imports: [
@@ -35,8 +36,9 @@ import { ProfileModule } from './profile/profile.module';
       }),
     }),
     ProfileModule,
+    HashTagModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

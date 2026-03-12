@@ -1,5 +1,16 @@
+import { Hash } from 'crypto';
+import { HashTag } from 'src/hash-tag/hash-tag.entity';
 import { User } from 'src/users/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('tweets')
 export class Tweet {
@@ -12,12 +23,16 @@ export class Tweet {
     @Column({ type: 'text', nullable: true })
     image?: string;
 
-    @Column()
-    createdAt?: Date;
+    @CreateDateColumn()
+    createdAt: Date | undefined;
 
-    @Column()
-    updatedAt?: Date;
+    @UpdateDateColumn()
+    updatedAt: Date | undefined;
 
-    @ManyToOne(() => User, (user) => user.tweet, { eager: true })
+    @ManyToOne(() => User, (user) => user.tweet)
     user: User;
+
+    @ManyToMany(() => HashTag)
+    @JoinTable()
+    hashTag: HashTag[];
 }

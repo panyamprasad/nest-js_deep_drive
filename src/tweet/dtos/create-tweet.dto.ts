@@ -1,14 +1,14 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateTweetDto {
-    @IsNotEmpty()
-    @IsString()
-    text: string | undefined;
+  @IsNotEmpty()
+  @IsString()
+  text: string | undefined;
 
-    @IsOptional()
-    image?: string;
+  @IsOptional()
+  image?: string;
 
-    @IsNotEmpty()
-    @IsNumber()
-    userId: number;
+  @IsNotEmpty()
+  @IsNumber()
+  userId: number;
 }

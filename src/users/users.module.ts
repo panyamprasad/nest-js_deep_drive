@@ -11,4 +11,4 @@ import { Profile } from 'src/profile/profile.entity';
   exports: [UsersService],
   imports: [TypeOrmModule.forFeature([User, Profile])],
 })
-export class UserModule { }
+export class UserModule {}

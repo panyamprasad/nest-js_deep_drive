@@ -17,7 +17,7 @@ export class UsersService {
     private userRepository: Repository<User>,
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
-  ) { }
+  ) {}
 
   public async createUser(userData: CreateUserDto) {
     // Validate the incoming user data if a user with the same email already exists
@@ -90,12 +90,11 @@ export class UsersService {
       const user = await this.userRepository.findOneBy({ id });
       if (!user) {
         return {
-          message: `User with id ${id} not found`
-        }
+          message: `User with id ${id} not found`,
+        };
       }
       return this.userRepository.findOneBy({ id });
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error fetching user by id:', error);
       throw new Error('Failed to fetch user by id');
     }
