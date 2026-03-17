@@ -9,6 +9,7 @@ import {
   generateRandomPassword,
   hashPassword,
 } from 'src/common/utils/password.utils';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
@@ -17,7 +18,8 @@ export class UsersService {
     private userRepository: Repository<User>,
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
-  ) {}
+    private readonly configService: ConfigService
+  ) { }
 
   public async createUser(userData: CreateUserDto) {
     // Validate the incoming user data if a user with the same email already exists
@@ -69,6 +71,7 @@ export class UsersService {
   }
 
   public async getAllUsers() {
+    console.log(this.configService.get<string>('ENV_MODE'));
     try {
       const users = await this.userRepository.find({
         relations: {
