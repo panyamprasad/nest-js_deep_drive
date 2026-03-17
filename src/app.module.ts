@@ -41,4 +41,4 @@ import { HashTagModule } from './hash-tag/hash-tag.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
