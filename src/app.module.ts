@@ -7,8 +7,8 @@ import { EmailModule } from './email/email.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
-import { User } from './users/user.entity';
 import { ProfileModule } from './profile/profile.module';
+import { HashTagModule } from './hash-tag/hash-tag.module';
 
 @Module({
   imports: [
@@ -36,6 +36,7 @@ import { ProfileModule } from './profile/profile.module';
       }),
     }),
     ProfileModule,
+    HashTagModule,
   ],
   controllers: [AppController],
   providers: [AppService],

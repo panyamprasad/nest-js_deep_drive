@@ -1,4 +1,11 @@
-import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
+import { CreateProfileDto } from 'src/profile/dtos/create-profile.dto';
 
 export class CreateUserDto {
   @IsString()
@@ -11,8 +18,11 @@ export class CreateUserDto {
   @MaxLength(150, { message: 'Email must be at most 150 characters long' })
   email: string | undefined;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty({ message: 'Password is required' })
-  @MaxLength(100, { message: 'Password must be at most 100 characters long' })
-  password: string | undefined;
+  @MaxLength(100)
+  password?: string;
+
+  @IsOptional()
+  profile: CreateProfileDto | undefined;
 }

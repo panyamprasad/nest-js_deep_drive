@@ -9,4 +9,4 @@ import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
   providers: [ProfileService],
   imports: [TypeOrmModule.forFeature([Profile])],
 })
-export class ProfileModule { }
+export class ProfileModule {}
