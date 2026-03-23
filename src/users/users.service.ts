@@ -18,7 +18,7 @@ export class UsersService {
     private userRepository: Repository<User>,
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) { }
 
   public async createUser(userData: CreateUserDto) {

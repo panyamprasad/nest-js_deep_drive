@@ -22,7 +22,6 @@ export class UsersController {
 
   @Get(':id')
   getUserById(@Param('id', ParseIntPipe) id: any) {
-    console.log(typeof id, id);
     return this.usersService.getUserById(id);
   }
 
