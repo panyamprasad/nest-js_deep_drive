@@ -1,5 +1,13 @@
 /* eslint-disable prettier/prettier */
-import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException, RequestTimeoutException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,15 +27,12 @@ export class UsersService {
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   public async createUser(userData: CreateUserDto) {
     // Validate the incoming user data if a user with the same email already exists
     const existingUser = await this.userRepository.findOne({
-      where: [
-        { email: userData.email },
-        { username: userData.username }
-      ],
+      where: [{ email: userData.email }, { username: userData.username }],
     });
 
     if (existingUser) {
@@ -35,19 +40,25 @@ export class UsersService {
       const isUserName = existingUser.username === userData.username;
 
       if (isEmail && isUserName) {
-        throw new BadRequestException('User with both this email and username already exists.')
+        throw new BadRequestException(
+          'User with both this email and username already exists.',
+        );
       }
       if (isEmail) {
         throw new BadRequestException('User with this email already exists.');
       }
       if (isUserName) {
-        throw new BadRequestException('User with this username already exists.')
+        throw new BadRequestException(
+          'User with this username already exists.',
+        );
       }
     }
 
     // Generate the password for the user
-    const randomPassword = generateRandomPassword();
-    const hashedPassword = hashPassword(randomPassword);
+    const randomPassword = userData.password
+      ? userData.password
+      : generateRandomPassword(12);
+    const hashedPassword = await hashPassword(randomPassword);
 
     try {
       const newUser = this.userRepository.create({
@@ -63,9 +74,12 @@ export class UsersService {
       };
     } catch (error) {
       if (error.code === 'ECONNREFUSED') {
-        throw new RequestTimeoutException('An error has occured, please try again', {
-          description: 'Could not connect the database.'
-        })
+        throw new RequestTimeoutException(
+          'An error has occurred, please try again',
+          {
+            description: 'Could not connect the database.',
+          },
+        );
       }
       throw new InternalServerErrorException('Failed to create user');
     }
@@ -98,14 +112,17 @@ export class UsersService {
         },
       });
       if (users.length === 0) {
-        return { message: 'No Users Found' }
+        return { message: 'No Users Found' };
       }
       return users;
     } catch (error) {
       if (error.code === 'ECONNREFUSED') {
-        throw new RequestTimeoutException('An error has occured, please try again', {
-          description: 'Could not connect the database.'
-        })
+        throw new RequestTimeoutException(
+          'An error has occured, please try again',
+          {
+            description: 'Could not connect the database.',
+          },
+        );
       }
     }
   }
@@ -115,24 +132,57 @@ export class UsersService {
       const user = await this.userRepository.findOneBy({ id });
       if (!user) {
         //Handle the customException
-        throw new HttpException({
-          status: HttpStatus.NOT_FOUND,
-          error: `The User with id ${id} not found`,
-        }, HttpStatus.NOT_FOUND, {
-          description: 'The exception occured because a user with ID not found.'
-        })
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: `The User with id ${id} not found`,
+          },
+          HttpStatus.NOT_FOUND,
+          {
+            description:
+              'The exception occured because a user with ID not found.',
+          },
+        );
       }
       return this.userRepository.findOneBy({ id });
     } catch (error) {
       if (error.code === 'ECONNREFUSED') {
-        throw new RequestTimeoutException('An error has occured, please try again', {
-          description: 'Could not connect the database.'
-        })
+        throw new RequestTimeoutException(
+          'An error has occured, please try again',
+          {
+            description: 'Could not connect the database.',
+          },
+        );
       }
       if (error instanceof HttpException) {
         throw error;
       }
       throw new InternalServerErrorException('Failed to fetch user by id');
+    }
+  }
+
+  public async getUserByUsername(username: string) {
+    try {
+      const user = await this.userRepository.findOneBy({ username });
+      if (!user) {
+        throw new NotFoundException(`User with username ${username} not found`);
+      }
+      return user;
+    } catch (error) {
+      if (error.code === 'ECONNREFUSED') {
+        throw new RequestTimeoutException(
+          'An error has occured, please try again',
+          {
+            description: 'Could not connect the database.',
+          },
+        );
+      }
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Failed to fetch user by username',
+      );
     }
   }
 }

@@ -4,18 +4,18 @@ import { CreateHashTagDto } from './dtos/create-hash-tag.dto';
 
 @Controller('hash_tag')
 export class HashTagController {
-    constructor(private readonly hashTagService: HashTagService) { }
+  constructor(private readonly hashTagService: HashTagService) {}
 
-    @Post()
-    public async createHashTag(@Body() createHashTagDto: CreateHashTagDto) {
-        try {
-            const result = await this.hashTagService.createHashTag(
-                createHashTagDto.name,
-            );
-            return result;
-        } catch (error) {
-            console.error('Error in HashTagController:', error);
-            throw new Error('Failed to create hash tag');
-        }
+  @Post()
+  public async createHashTag(@Body() createHashTagDto: CreateHashTagDto) {
+    try {
+      const result = await this.hashTagService.createHashTag(
+        createHashTagDto.name,
+      );
+      return result;
+    } catch (error) {
+      console.error('Error in HashTagController:', error);
+      throw new Error('Failed to create hash tag');
     }
+  }
 }

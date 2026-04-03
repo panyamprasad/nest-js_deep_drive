@@ -12,13 +12,12 @@ export function hashPassword(password: string): string {
   return `${salt}:${hash}`; // ONE value
 }
 
-export function verifyPassword(
-  password: string,
-  hash: string,
-  salt: string,
-): boolean {
+export function verifyPassword(password: string, hash: string): boolean {
+  const [salt, correctHash] = hash.split(':');
   const newHash = crypto
-    .pbkdf2Sync(password, salt, 1000, 64, 'sha512')
+    .pbkdf2Sync(password, salt, 10000, 64, 'sha512')
     .toString('hex');
-  return newHash === hash;
+  console.log('New Hash:', newHash);
+  console.log('Correct Hash:', correctHash);
+  return newHash === correctHash;
 }
