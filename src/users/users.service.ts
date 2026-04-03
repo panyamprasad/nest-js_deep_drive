@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException, RequestTimeoutException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,21 +23,36 @@ export class UsersService {
 
   public async createUser(userData: CreateUserDto) {
     // Validate the incoming user data if a user with the same email already exists
-    const user = await this.userRepository.findOne({
-      where: {
-        email: userData.email,
-      },
+    const existingUser = await this.userRepository.findOne({
+      where: [
+        { email: userData.email },
+        { username: userData.username }
+      ],
     });
-    if (user) {
-      return { message: 'User with this email already exists' };
+
+    if (existingUser) {
+      const isEmail = existingUser.email === userData.email;
+      const isUserName = existingUser.username === userData.username;
+
+      if (isEmail && isUserName) {
+        throw new BadRequestException('User with both this email and username already exists.')
+      }
+      if (isEmail) {
+        throw new BadRequestException('User with this email already exists.');
+      }
+      if (isUserName) {
+        throw new BadRequestException('User with this username already exists.')
+      }
     }
+
     // Generate the password for the user
     const randomPassword = generateRandomPassword();
     const hashedPassword = hashPassword(randomPassword);
+
     try {
-      userData.profile = userData.profile ?? {};
       const newUser = this.userRepository.create({
         ...userData,
+        profile: userData.profile ?? {},
         password: hashedPassword,
       });
       const res = await this.userRepository.save(newUser);
@@ -47,8 +62,12 @@ export class UsersService {
         password: randomPassword,
       };
     } catch (error) {
-      console.error('Error creating user:', error);
-      throw new Error('Failed to create user');
+      if (error.code === 'ECONNREFUSED') {
+        throw new RequestTimeoutException('An error has occured, please try again', {
+          description: 'Could not connect the database.'
+        })
+      }
+      throw new InternalServerErrorException('Failed to create user');
     }
   }
 
@@ -79,12 +98,15 @@ export class UsersService {
         },
       });
       if (users.length === 0) {
-        return { message: 'No Users Found' };
+        return { message: 'No Users Found' }
       }
       return users;
     } catch (error) {
-      console.error('Error fetching users:', error);
-      throw new Error('Failed to fetch users');
+      if (error.code === 'ECONNREFUSED') {
+        throw new RequestTimeoutException('An error has occured, please try again', {
+          description: 'Could not connect the database.'
+        })
+      }
     }
   }
 
@@ -92,14 +114,25 @@ export class UsersService {
     try {
       const user = await this.userRepository.findOneBy({ id });
       if (!user) {
-        return {
-          message: `User with id ${id} not found`,
-        };
+        //Handle the customException
+        throw new HttpException({
+          status: HttpStatus.NOT_FOUND,
+          error: `The User with id ${id} not found`,
+        }, HttpStatus.NOT_FOUND, {
+          description: 'The exception occured because a user with ID not found.'
+        })
       }
       return this.userRepository.findOneBy({ id });
     } catch (error) {
-      console.error('Error fetching user by id:', error);
-      throw new Error('Failed to fetch user by id');
+      if (error.code === 'ECONNREFUSED') {
+        throw new RequestTimeoutException('An error has occured, please try again', {
+          description: 'Could not connect the database.'
+        })
+      }
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to fetch user by id');
     }
   }
 }
